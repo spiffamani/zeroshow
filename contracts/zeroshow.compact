@@ -1,0 +1,13 @@
+pragma language_version >= 0.16 && <= 0.34;
+
+import CompactStandardLibrary;
+
+export ledger verifiedCount: Counter;
+
+witness completedTasks(): Uint<64>;
+
+export circuit proveThreshold(threshold: Uint<64>): Boolean {
+  const met = completedTasks() >= threshold;
+  verifiedCount.increment(1);
+  return disclose(met);
+}
