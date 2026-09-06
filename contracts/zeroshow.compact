@@ -1,3 +1,6 @@
+// Zeroshow: proves a private achievement count meets a public threshold
+// without revealing the actual count. See README.md for the full privacy model.
+
 pragma language_version >= 0.16 && <= 0.34;
 
 import CompactStandardLibrary;
