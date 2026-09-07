@@ -1,0 +1,15 @@
+{
+  "name": "zeroshow-contract",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "compact": "compact compile contracts/zeroshow.compact managed",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@midnight-ntwrk/compact-runtime": "0.16.0",
+    "@midnight-ntwrk/midnight-js-network-id": "4.1.1",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
