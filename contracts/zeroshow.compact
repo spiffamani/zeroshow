@@ -1,0 +1,42 @@
+pragma language_version >= 0.23;
+
+import CompactStandardLibrary;
+
+// Private witnesses stay on the guest's machine. They are used to build the
+// ZK proof and are never written to the public ledger.
+witness ticketSecret(): Bytes<32>;
+witness guestAge(): Uint<64>;
+
+// Public ledger state — visible to every observer on Midnight.
+export ledger showId: Bytes<32>;
+export ledger minAge: Uint<64>;
+export ledger ticketCommitment: Bytes<32>;
+export ledger admitted: Boolean;
+export ledger checkIns: Counter;
+
+// Host opens a show: public event id + public age gate.
+export circuit openShow(id: Bytes<32>, ageGate: Uint<64>): [] {
+  showId = disclose(id);
+  minAge = disclose(ageGate);
+  admitted = false;
+}
+
+circuit commitTicket(secret: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([
+    pad(32, "zeroshow:ticket"),
+    secret
+  ]);
+}
+
+// Guest checks in. The circuit proves age >= minAge and commits to the
+// ticket. disclose() is used only for the commitment and the yes/no —
+// never for the ticket secret or the raw age.
+export circuit checkIn(): [] {
+  const secret = ticketSecret();
+  const age = guestAge();
+  const qualifies = age >= minAge;
+  assert(disclose(qualifies), "Guest does not meet the age gate");
+  ticketCommitment = disclose(commitTicket(secret));
+  admitted = disclose(true);
+  checkIns.increment(1);
+}
