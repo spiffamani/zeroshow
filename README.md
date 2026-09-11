@@ -140,8 +140,11 @@ npm run cli
 | Field | Value |
 | --- | --- |
 | Network | Midnight Preview |
-| Explorer / faucet | https://midnight-tmnight-preview.nethermind.dev/ |
-| Contract address | see `screenshots/deploy.png` after `npm run setup -- --network preview` |
+| Faucet | https://faucet.preview.midnight.network/ |
+| Wallet (unshielded) | `mn_addr_preview1hg085sw00jg6c9l6gmdy94w34vnnn3z08e5ksmfxmln7z6z98w5qr8w5y9` |
+| Contract address | `96c0c47ccd7d0b8952a6e6dd0cdd817d1c75c654d6702b62a4340d90c4c2e079` |
+| Faucet tx | `0051cd4f55b14a2b6bfe272232336bce8ef3a42f2a208f28e83a92e4fd3dcc3842` |
+| Evidence | `screenshots/compile.png`, `screenshots/deploy.png`, `screenshots/faucet.png` |
 
 ---
 

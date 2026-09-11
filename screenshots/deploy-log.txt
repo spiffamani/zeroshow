@@ -1,0 +1,11 @@
+Deploy zeroshow to preview
+Wallet Address: mn_addr_preview1hg085sw00jg6c9l6gmdy94w34vnnn3z08e5ksmfxmln7z6z98w5qr8w5y9
+Balance: 5,000,000,000 tNight
+DUST tokens ready!
+
+✅ Contract deployed successfully!
+
+Contract Address: 96c0c47ccd7d0b8952a6e6dd0cdd817d1c75c654d6702b62a4340d90c4c2e079
+Network: preview
+Faucet tx: 0051cd4f55b14a2b6bfe272232336bce8ef3a42f2a208f28e83a92e4fd3dcc3842
+Deployed at: 2026-09-11T14:44:39.272Z
