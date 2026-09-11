@@ -4,7 +4,9 @@
 
 ZeroShow is a privacy-first live-event check-in protocol on [Midnight](https://midnight.network). A host posts a public show id and an age gate. A guest proves they hold a ticket and meet the gate. The ledger learns a commitment and a yes/no. It never learns the ticket secret or the number.
 
-This repository is the Midnight Moon **Level 1 — New Moon** submission (September cohort): toolchain, first Compact contract (public ledger + private witness + deliberate `disclose()`), tests, compiled circuits, Preview deploy, and this product sketch.
+This repository is the Midnight Moon **Level 2 — Waxing Crescent** submission (September cohort): the Level 1 Compact contract, wired to a Lace-connected door UI on **Preprod**. The guest's ticket and age stay in the browser; the circuit proves they qualify; the public ledger only learns a hash and a boolean.
+
+Live demo: _pending first Vercel deploy — run `npx vercel --prod` from the repo root, then replace this line._
 
 ---
 
@@ -12,7 +14,7 @@ This repository is the Midnight Moon **Level 1 — New Moon** submission (Septem
 
 Getting into a show today usually means oversharing. The door scans a QR code tied to an email, a name, sometimes a date of birth. An age-gated venue does not need your birthday. It needs one bit: *are you old enough, and do you hold a valid ticket?*
 
-ZeroShow keeps the **ticket secret** and the **guest age** in Compact witnesses on the guest's machine. The circuit checks `age >= minAge`, hashes the ticket into a public **commitment**, and writes an **admitted** flag. Later levels can add issuer-signed tickets, nullifiers so a ticket cannot be replayed, a Lace-connected door app, and selective disclosure for the promoter — still without putting the raw ticket or the raw age on-chain.
+ZeroShow keeps the **ticket secret** and the **guest age** in Compact witnesses on the guest's machine. The circuit checks `age >= minAge`, hashes the ticket into a public **commitment**, and writes an **admitted** flag. Later levels can add issuer-signed tickets, nullifiers so a ticket cannot be replayed, and selective disclosure for the promoter — still without putting the raw ticket or the raw age on-chain.
 
 The name is the product: **zero-knowledge show** admission.
 
@@ -32,18 +34,37 @@ Compact is privacy-by-default. Values that come from a `witness` (or from circui
 
 ---
 
-## Level 1 scope
+## Level 2 privacy claim
+
+This is the observable privacy behavior reviewers should check in the UI:
+
+1. Type a ticket passphrase and an age in the **Guest** panel. Those fields are browser-only. They are hashed / proven locally. They are never circuit arguments and never ledger fields.
+2. Call `checkIn`. The proof asserts `guestAge >= minAge` and commits `persistentHash(["zeroshow:ticket", ticketSecret])`.
+3. Refresh the **Public ledger** panel. It must show:
+   - `ticketCommitment` — a 32-byte hex hash, **not** the passphrase
+   - `admitted` — `true` or `false`
+   - `checkIns` — a counter
+   - `minAge` / `showId` — host-published public values
+4. The passphrase and the numeric age must **not** appear in the public panel, the indexer payload, or the transaction's public effects.
+
+If you type age `17` against a gate of `18`, `checkIn` fails in-circuit (`Guest does not meet the age gate`) and the ledger does not learn why — only that the proof was invalid.
+
+---
+
+## Level 2 scope
 
 What this cycle ships:
 
-- Compact contract with public ledger fields and private witnesses
-- `compact compile` producing `contracts/managed/zeroshow` (circuits + keys)
-- Passing test suite (`npm test`)
-- Deploy to Midnight **Preview** with a visible contract address
-- This README (idea + public vs private + local setup)
-- At least 5 meaningful commits
+- Vite + React door UI (`web/`)
+- Lace **connect / disconnect** via the DApp connector API (`window.midnight` enumeration, `connect('preprod')`)
+- `openShow` and `checkIn` called from the frontend
+- Observable privacy: private form vs public ledger panel
+- Contract deployed to Midnight **Preprod**
+- Live demo (Vercel)
+- This README (privacy claim + Preprod address)
+- At least 8 meaningful commits
 
-What this cycle does **not** ship (later moons): Lace UI, issuer signatures, nullifiers, production key management.
+What later moons still add: issuer-signed tickets, nullifiers, production key management.
 
 ---
 
@@ -54,11 +75,13 @@ zeroshow/
 ├── contracts/
 │   ├── zeroshow.compact      # Compact source
 │   ├── witnesses.ts          # Private-state callbacks for the circuits
-│   └── managed/zeroshow/     # Generated circuits + keys (committed for this challenge)
+│   └── managed/zeroshow/     # Generated circuits + keys (committed)
+├── web/                      # Vite + React door UI (Lace on Preprod)
 ├── src/                      # Deploy, CLI, tests
 ├── scripts/                  # compile wrapper (WSL on Windows), clean, e2e
-├── screenshots/              # Compile output + deploy address
+├── screenshots/              # Compile + deploy evidence
 ├── docker-compose.yml        # Local node / indexer / proof server
+├── vercel.json               # Live demo build
 ├── package.json
 └── README.md
 ```
@@ -71,7 +94,8 @@ zeroshow/
 - **Docker Desktop** with Compose v2 (proof server)
 - **Compact compiler 0.31.1** — [Install the Midnight toolchain](https://docs.midnight.network/getting-started/installation)
 - On Windows: **WSL Ubuntu**. Compact has no native Windows binary; `npm run compile` calls WSL for you.
-- A Preview wallet with tNIGHT from the [Preview faucet](https://midnight-tmnight-preview.nethermind.dev/)
+- [Lace](https://www.lace.io/) browser extension, network set to **Preprod**
+- Preprod tNIGHT from the [Preprod faucet](https://faucet.preprod.midnight.network/), then **Generate tDUST** in Lace (fees)
 
 ---
 
@@ -97,45 +121,61 @@ Run tests:
 npm test
 ```
 
-Start the proof server (Preview only needs this container):
+Start the local proof server (Lace → Settings → Midnight → Local `http://localhost:6300`):
 
 ```bash
 npm run proof-server:start
 ```
 
-Deploy to Midnight **Preview**:
+Door UI:
 
 ```bash
-npm run setup -- --network preview
+npm install --prefix web
+npm run web
 ```
 
-The first Preview run generates a wallet and prints a faucet URL. Fund the address, wait for tNIGHT, then the script deploys and prints the **contract address**. Save a screenshot of that output for the submission.
+Opens `http://localhost:3000`. Connect Lace, join the Preprod contract (or **Deploy new door**), call `openShow`, then `checkIn`.
+
+CLI path (optional):
+
+```bash
+npm run setup -- --network preprod
+npm run cli -- --network preprod
+```
 
 Wallet seeds live in `.midnight-state.json` (gitignored).
 
-Interact with the deployed contract:
-
-```bash
-npm run cli
-```
-
 ---
 
-## Submission evidence
+## Level 2 submission evidence
 
 | Requirement | Where |
 | --- | --- |
 | Public GitHub repo + README | this repository |
-| Setup instructions | [Setup — run locally](#setup--run-locally) |
-| Screenshot: compile (circuits listed) | `screenshots/compile.png` |
-| Screenshot: deployed address | `screenshots/deploy.png` |
-| Public state vs private witness | [section above](#public-state-vs-private-witness) |
-| Initial product idea | [section above](#initial-product-idea) |
-| 5+ meaningful commits | git history |
+| Live demo | see **Live demo** at the top |
+| Lace connect / disconnect | `web/src/App.tsx`, `web/src/selectWallet.ts` |
+| Circuit called from the frontend | `openShow` / `checkIn` in the door UI |
+| Observable privacy behavior | [Level 2 privacy claim](#level-2-privacy-claim) |
+| Preprod contract address | [Preprod deployment](#preprod-deployment) |
+| Demo video | wallet connect + successful `checkIn` (record in Chrome with Lace) |
+| 8+ meaningful commits | git history |
 
 ---
 
-## Preview deployment
+## Preprod deployment
+
+| Field | Value |
+| --- | --- |
+| Network | Midnight Preprod |
+| Faucet | https://faucet.preprod.midnight.network/ |
+| Contract address | _deploy from the UI (**Deploy new door**) or `npm run setup -- --network preprod`, then paste the 64-hex address here and into `web/.env` as `VITE_DEFAULT_CONTRACT`_ |
+| Proof server | local Docker `midnightntwrk/proof-server:8.1.0` on port 6300 |
+
+After the first Preprod deploy, set `VITE_DEFAULT_CONTRACT` so the live demo joins that door automatically.
+
+---
+
+## Preview deployment (Level 1)
 
 | Field | Value |
 | --- | --- |
@@ -152,7 +192,8 @@ npm run cli
 
 | Level | Theme | ZeroShow increment |
 | --- | --- | --- |
-| 2 Waxing Crescent | Frontend | Door UI + Lace wallet on Preview |
+| 1 New Moon | Toolchain | Compact contract, tests, Preview deploy |
+| 2 Waxing Crescent | Frontend | Door UI + Lace wallet on Preprod |
 | 3 First Quarter | Production | Tests, CI/CD, issue a real problem statement |
 | 4 Waxing Gibbous | MVP | Issuer attestation + nullifier so tickets cannot be replayed |
 | 5 Full Moon | Users | Feedback loop and Preprod guests |
