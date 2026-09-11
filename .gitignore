@@ -13,6 +13,7 @@ build/
 .env
 .env.*
 !.env.example
+!web/.env.example
 
 # Deployment / wallet secrets — never commit
 .midnight-state.json
@@ -47,3 +48,9 @@ coverage/
 # Temporary files
 tmp/
 temp/
+
+# Vite / copied ZK artifacts (copied at build from contracts/managed)
+web/.vite/
+web/public/keys/
+web/public/zkir/
+web/public/compiler/

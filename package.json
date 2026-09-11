@@ -10,6 +10,7 @@
     "build": "npx tsc --noEmit || true",
     "setup": "npx tsx src/setup.ts",
     "setup:preview": "npx tsx src/setup.ts --network preview",
+    "setup:preprod": "npx tsx src/setup.ts --network preprod",
     "deploy": "npx tsx src/deploy.ts",
     "cli": "npx tsx src/cli.ts",
     "check-balance": "npx tsx src/check-balance.ts",
@@ -18,7 +19,9 @@
     "proof-server:stop": "docker compose down",
     "clean": "node scripts/clean.mjs",
     "test": "node --import tsx --test src/test/*.test.ts",
-    "test:e2e": "tsx scripts/e2e-check.ts"
+    "test:e2e": "tsx scripts/e2e-check.ts",
+    "web": "npm --prefix web run dev",
+    "web:build": "npm --prefix web run build"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0",
