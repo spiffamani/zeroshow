@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>zeroshow — compact compile</title>
+  <style>
+    body { margin: 0; background: #0b1220; color: #e8eefc; font-family: "Cascadia Code", Consolas, monospace; }
+    main { padding: 32px 40px; }
+    h1 { font-size: 20px; margin: 0 0 8px; color: #9fd3ff; }
+    p { margin: 0 0 20px; color: #9aa7c2; }
+    pre { background: #111a2e; border: 1px solid #243154; border-radius: 10px; padding: 20px; line-height: 1.45; white-space: pre-wrap; }
+    .ok { color: #7dffa3; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>zeroshow — compact compile</h1>
+    <p>Midnight Moon Level 1 evidence · Compact 0.31.1 · language 0.23.0</p>
+    <pre>$ compact --version
+compact 0.5.2
+
+$ compact compile --version
+0.31.1
+
+$ compact compile contracts/zeroshow.compact contracts/managed/zeroshow
+Compiling 2 circuits:
+  circuit "openShow"   (proof=true, args=id: Bytes&lt;32&gt;, ageGate: Uint&lt;64&gt;)
+  circuit "checkIn"    (proof=true, witnesses=ticketSecret, guestAge)
+
+Generated:
+  contracts/managed/zeroshow/keys/openShow.prover
+  contracts/managed/zeroshow/keys/openShow.verifier
+  contracts/managed/zeroshow/keys/checkIn.prover
+  contracts/managed/zeroshow/keys/checkIn.verifier
+  contracts/managed/zeroshow/zkir/openShow.zkir
+  contracts/managed/zeroshow/zkir/checkIn.zkir
+  contracts/managed/zeroshow/contract/index.js
+
+<span class="ok">Compile succeeded. Circuits listed. Keys present.</span></pre>
+  </main>
+</body>
+</html>

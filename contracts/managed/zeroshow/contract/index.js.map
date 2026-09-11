@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "file": "index.js",
+  "sourceRoot": "../../../../",
+  "sources": ["contracts/zeroshow.compact", "compiler/standard-library.compact"],
+  "names": [],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAAA;;;;;;;;;;;;;;;;MAiBA,AAAA,QAIC;;;;;cAJuB,IAAa;cAAE,SAAiB;;;;;;;;;;;;;;;;;;;;;;;;;yCAAhC,IAAa,+BAAE,SAAiB;;;;;;;;;0CAAhC,IAAa;0CAAE,SAAiB;;;OAIvD;MAYD,AAAA,OAQC;;;;;;;;;;;;;;;;;;;;;;OAAA;;;;;;;;;;GACA;EA1CD;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;IAUA;;;;;;;;;yEAAgC;IAChC;;;;;;;;;yEAA+B;IAC/B;;;;;;;;;yEAA0C;IAC1C;;;;;;;;;yEAAgC;IAChC;;;;;;;;;yEAAgC;;;;;;;GA4B/B;EC1CD,AAAA,kBAAA;oEAAA;;;EDMA,AAAA,eAAkC;;0DAAlC,YAAkC;;;;;;;;;;;;;;GAAA;EAClC,AAAA,WAA6B;;0DAA7B,QAA6B;;;;;;;;;;;;;;GAAA;EAU7B,AAAA,WAIC,4BAJuB,IAAa,EAAE,SAAiB;IACtD;;;;;;;2HAAkB,IAAE;;yEAAd;IACN;;;;;;;2HAAkB,SAAO;;yEAAnB;IACN;;;;;;;;;yEAAQ;;GACT;EAED,AAAA,eAKC,CALoB,QAAiB;;mCAGlC,QAAM;GAET;EAKD,AAAA,UAQC;UAPO,QAAuB;UACvB,KAAgB;UAChB,WAAyB,GAAb,KAAG;;gDAAI;;;;;;;;;;;qHAAM;4BACf,WAAS;UACzB,KAAgB,wBAAyB,QAAM;IAA/C;;;;;;;2HAAA,KAAgB;;yEAAA;IAChB;;;;;;;;;yEAAQ;UACR,KAAQ;IAAR;;;;;;;;;;6FAAA,KAAQ;;;;wEAAA;;GACT;;;;;;;;;;;;;;;;IA/BD;qCAAA;;;;;;;;;;;0GAAgC;KAAA;IAChC;qCAAA;;;;;;;;;;;0GAA+B;KAAA;IAC/B;qCAAA;;;;;;;;;;;0GAA0C;KAAA;IAC1C;qCAAA;;;;;;;;;;;0GAAgC;KAAA;IAChC;qCAAA;;;;;;;;;;;0GAAgC;KAAA;;;;;;;;;;;;"
+}
