@@ -1,15 +1,44 @@
 {
-  "name": "zeroshow-contract",
-  "version": "0.1.0",
+  "name": "zeroshow-dapp",
+  "version": "0.2.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "compact": "compact compile contracts/zeroshow.compact managed",
+    "dev": "npm run compact && vite",
+    "build": "npm run compact && tsc -b && vite build",
+    "preview": "vite preview",
+    "compact": "compact compile contracts/zeroshow.compact managed && node scripts/prepare-contract.mjs",
     "test": "vitest run"
   },
-  "devDependencies": {
-    "@midnight-ntwrk/compact-runtime": "0.16.0",
+  "dependencies": {
+    "@midnight-ntwrk/compact-js": "2.5.1",
+    "@midnight-ntwrk/compact-runtime": "0.15.0",
+    "@midnight-ntwrk/dapp-connector-api": "4.0.1",
+    "@midnight-ntwrk/ledger-v8": "8.1.0",
+    "@midnight-ntwrk/midnight-js-contracts": "4.1.1",
+    "@midnight-ntwrk/midnight-js-dapp-connector-proof-provider": "4.1.1",
+    "@midnight-ntwrk/midnight-js-fetch-zk-config-provider": "4.1.1",
+    "@midnight-ntwrk/midnight-js-indexer-public-data-provider": "4.1.1",
+    "@midnight-ntwrk/midnight-js-level-private-state-provider": "4.1.1",
     "@midnight-ntwrk/midnight-js-network-id": "4.1.1",
-    "typescript": "^5.5.0",
+    "@midnight-ntwrk/midnight-js-types": "4.1.1",
+    "buffer": "^6.0.3",
+    "events": "^3.3.0",
+    "process": "^0.11.10",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "stream-browserify": "^3.0.0",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.1",
+    "vite-plugin-static-copy": "^2.2.0",
+    "vite-plugin-wasm": "^3.4.1",
     "vitest": "^2.0.0"
   }
 }
