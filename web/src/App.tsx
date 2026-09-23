@@ -6,7 +6,7 @@ import { padShowId, passphraseToSecret, truncAddr } from './encoding';
 import { friendlyError } from './errors';
 import { useLedger } from './hooks/useLedger';
 import { createBrowserProviders } from './providers';
-import { listWallets, selectWallet } from './selectWallet';
+import { hasOneAmWallet, selectWallet } from './selectWallet';
 
 type WalletState = 'detecting' | 'no-wallet' | 'ready' | 'connecting' | 'connected';
 
@@ -38,7 +38,7 @@ export default function App() {
     let n = 0;
     const id = setInterval(() => {
       n += 1;
-      if (listWallets().length > 0) {
+      if (hasOneAmWallet()) {
         setWalletState('ready');
         clearInterval(id);
       } else if (n > 40) {
@@ -58,14 +58,14 @@ export default function App() {
       const { unshieldedAddress } = await connected.getUnshieldedAddress();
       const status = await connected.getConnectionStatus();
       if (status.status !== 'connected') {
-        throw new Error('Lace did not report a connected status.');
+        throw new Error('1AM did not report a connected status.');
       }
       const providers = await createBrowserProviders(connected);
       providersRef.current = providers;
       setWallet(connected);
       setAddress(unshieldedAddress);
       setWalletState('connected');
-      note(`Lace connected on ${NETWORK_ID}: ${truncAddr(unshieldedAddress)}`);
+      note(`${initial.name} connected on ${NETWORK_ID}: ${truncAddr(unshieldedAddress)}`);
       if (contractAddress) {
         await attachContract(providers, contractAddress, 'join');
       }
@@ -79,14 +79,14 @@ export default function App() {
     try {
       await (wallet as { disconnect?: () => Promise<void> } | null)?.disconnect?.();
     } catch {
-      /* lace may not expose disconnect */
+      /* The connector may not expose disconnect. */
     }
     deployedRef.current = null;
     providersRef.current = null;
     setWallet(null);
     setAddress(null);
     setWalletState('ready');
-    note('Lace disconnected.');
+    note('Disconnected from this app.');
   };
 
   const attachContract = async (providers: any, addressToUse: string, mode: 'join' | 'deploy') => {
@@ -112,7 +112,7 @@ export default function App() {
   };
 
   const requireSession = () => {
-    if (!wallet || !providersRef.current) throw new Error('Connect Lace first.');
+    if (!wallet || !providersRef.current) throw new Error('Connect 1AM first.');
     return providersRef.current;
   };
 
@@ -133,7 +133,7 @@ export default function App() {
 
   const handleDeploy = async () => {
     setError(null);
-    setBusy('Deploying to Preprod (proving). Keep Lace open…');
+    setBusy('Deploying to Preprod (proving). Keep 1AM open…');
     try {
       const providers = requireSession();
       const addr = await attachContract(providers, joinInput || '0'.repeat(64), 'deploy');
@@ -199,7 +199,7 @@ export default function App() {
         <div className="wallet">
           {walletState === 'connected' ? (
             <>
-              <span className="pill live">Lace · {NETWORK_ID}</span>
+              <span className="pill live">1AM · {NETWORK_ID}</span>
               <code title={address ?? ''}>{truncAddr(address ?? '')}</code>
               <button type="button" onClick={() => void handleDisconnect()}>
                 Disconnect
@@ -212,10 +212,10 @@ export default function App() {
               disabled={walletState !== 'ready'}
               onClick={() => void handleConnect()}
             >
-              {walletState === 'detecting' && 'Looking for Lace…'}
-              {walletState === 'no-wallet' && 'Install Lace to connect'}
-              {walletState === 'ready' && 'Connect Lace'}
-              {walletState === 'connecting' && 'Approve in Lace…'}
+              {walletState === 'detecting' && 'Looking for 1AM…'}
+              {walletState === 'no-wallet' && 'Install or unlock 1AM to connect'}
+              {walletState === 'ready' && 'Connect 1AM'}
+              {walletState === 'connecting' && 'Approve in 1AM…'}
             </button>
           )}
         </div>
@@ -266,7 +266,7 @@ export default function App() {
 
         <section className="card private">
           <h2>Guest · private check-in</h2>
-          <p className="hint">Witnesses stay in this tab. The circuit proves them; the ledger never stores them.</p>
+          <p className="hint">The ticket and age are sent to the configured proving service for proof generation; the public ledger never stores their raw values. Use a long, random passphrase because its commitment is public.</p>
           <label>
             Ticket passphrase
             <input
@@ -327,16 +327,14 @@ export default function App() {
         <aside className="privacy">
           <h3>Privacy claim</h3>
           <p>
-            Compare what you typed in the guest form with this panel. The age and ticket passphrase never appear
-            here. What is disclosed is a SHA-256 ticket commitment, a boolean admitted flag, and a check-in
-            counter. That is the observable privacy behavior for Level 2.
+            The public ledger shows a SHA-256 ticket commitment, an admitted flag, and a check-in counter. It does not show the ticket passphrase or age. The configured proving provider receives private witnesses to generate the proof; the current prototype does not verify ticket issuance.
           </p>
         </aside>
       </section>
 
       <section className="card">
         <h2>Session log</h2>
-        {log.length === 0 ? <p className="hint">Connect Lace to begin.</p> : (
+        {log.length === 0 ? <p className="hint">Connect 1AM to begin.</p> : (
           <ul className="log">
             {log.map((line) => (
               <li key={line}>{line}</li>

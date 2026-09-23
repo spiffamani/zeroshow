@@ -16,9 +16,9 @@ export function extractErrorMessage(e: unknown): string {
 
 export function friendlyError(e: unknown): string {
   const msg = extractErrorMessage(e);
-  if (msg.includes('User rejected') || msg.includes('user rejected')) return 'Transaction cancelled in Lace.';
+  if (msg.includes('User rejected') || msg.includes('user rejected')) return 'Transaction cancelled in 1AM.';
   if (msg.includes('Failed to fetch') || msg.includes('Failed Proof Server') || msg.includes('proof server')) {
-    return 'Could not reach the proof server. Start it with `npm run proof-server:start` and point Lace at http://localhost:6300.';
+    return 'Could not reach the proof server. Start it with `npm run proof-server:start` and check the connected wallet prover settings.';
   }
   if (msg.includes('Guest does not meet the age gate')) return 'Check-in rejected: the private age does not meet the public gate.';
   if (msg.includes('mismatched verifier keys')) return 'Contract version mismatch. Deploy a new door from this build.';

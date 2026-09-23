@@ -14,7 +14,7 @@ export async function createBrowserProviders(connectedAPI: ConnectedAPI) {
   const config = await connectedAPI.getConfiguration();
   const proofServerUri = config.proverServerUri;
   if (!proofServerUri) {
-    throw new Error('Lace did not return a proof server URI. Set Lace → Midnight → Local proof server to http://localhost:6300');
+    throw new Error('The selected 1AM connection did not return a proving service URI. Check that 1AM is connected to Preprod and provides a proving service.');
   }
   const shieldedAddresses = await connectedAPI.getShieldedAddresses();
   const zkConfigProvider = new FetchZkConfigProvider(window.location.origin, fetch.bind(window));

@@ -2,11 +2,11 @@
 
 **Get in. Keep the ticket — and your age — to yourself.**
 
-ZeroShow is a privacy-first live-event check-in protocol on [Midnight](https://midnight.network). A host posts a public show id and an age gate. A guest proves they hold a ticket and meet the gate. The ledger learns a commitment and a yes/no. It never learns the ticket secret or the number.
+ZeroShow is a privacy-first live-event check-in protocol on [Midnight](https://midnight.network). A host posts a public show id and an age gate. The prototype lets a guest prove knowledge of a self-entered ticket secret and meet the age gate. The ledger learns a commitment and an admission result, never the raw ticket secret or age. It does not yet verify tickets issued by a promoter.
 
-This repository is the Midnight Moon **Level 2 — Waxing Crescent** submission (September cohort): the Level 1 Compact contract, wired to a Lace-connected door UI on **Preprod**. The guest's ticket and age stay in the browser; the circuit proves they qualify; the public ledger only learns a hash and a boolean.
+This repository is the Midnight Moon **Level 2 — Waxing Crescent** submission (September cohort): the Level 1 Compact event-admission contract, wired to a 1AM-connected door UI on **Preprod**. The app keeps ticket and age out of the public ledger; the connected proving service receives private witnesses to construct the proof.
 
-Live demo: _pending first Vercel deploy — run `npx vercel --prod` from the repo root, then replace this line._
+Live demo: _pending first Vercel deploy._
 
 ---
 
@@ -14,9 +14,9 @@ Live demo: _pending first Vercel deploy — run `npx vercel --prod` from the rep
 
 Getting into a show today usually means oversharing. The door scans a QR code tied to an email, a name, sometimes a date of birth. An age-gated venue does not need your birthday. It needs one bit: *are you old enough, and do you hold a valid ticket?*
 
-ZeroShow keeps the **ticket secret** and the **guest age** in Compact witnesses on the guest's machine. The circuit checks `age >= minAge`, hashes the ticket into a public **commitment**, and writes an **admitted** flag. Later levels can add issuer-signed tickets, nullifiers so a ticket cannot be replayed, and selective disclosure for the promoter — still without putting the raw ticket or the raw age on-chain.
+The DApp holds the ticket secret and guest age in browser memory/private state. The configured proving service receives those witnesses to construct each proof; Midnight's public ledger does not receive the raw values. The circuit checks `age >= minAge`, hashes the ticket into a public **commitment**, and writes an **admitted** flag. Later levels can add issuer-signed tickets, nullifiers so a ticket cannot be replayed, and selective disclosure for the promoter — still without putting the raw ticket or the raw age on-chain.
 
-The name is the product: **zero-knowledge show** admission.
+The name is the product: **zero-knowledge show** admission. The prototype proves knowledge of a self-entered ticket secret and age; it does not establish that a promoter issued the ticket. Issuer-signed tickets and anti-replay nullifiers are later work.
 
 ---
 
@@ -38,14 +38,14 @@ Compact is privacy-by-default. Values that come from a `witness` (or from circui
 
 This is the observable privacy behavior reviewers should check in the UI:
 
-1. Type a ticket passphrase and an age in the **Guest** panel. Those fields are browser-only. They are hashed / proven locally. They are never circuit arguments and never ledger fields.
+1. Type a ticket passphrase and an age in the **Guest** panel. The passphrase is hashed in the browser; the age is kept in in-memory private state. Both are supplied as witnesses to the configured proving service and neither is a public ledger field. The published commitment may enable guesses against weak passphrases, so use a long, random value.
 2. Call `checkIn`. The proof asserts `guestAge >= minAge` and commits `persistentHash(["zeroshow:ticket", ticketSecret])`.
 3. Refresh the **Public ledger** panel. It must show:
    - `ticketCommitment` — a 32-byte hex hash, **not** the passphrase
    - `admitted` — `true` or `false`
    - `checkIns` — a counter
    - `minAge` / `showId` — host-published public values
-4. The passphrase and the numeric age must **not** appear in the public panel, the indexer payload, or the transaction's public effects.
+4. The passphrase and age must not appear in public ledger state or transaction public effects. The configured proving service can receive the witness values.
 
 If you type age `17` against a gate of `18`, `checkIn` fails in-circuit (`Guest does not meet the age gate`) and the ledger does not learn why — only that the proof was invalid.
 
@@ -56,7 +56,8 @@ If you type age `17` against a gate of `18`, `checkIn` fails in-circuit (`Guest 
 What this cycle ships:
 
 - Vite + React door UI (`web/`)
-- Lace **connect / disconnect** via the DApp connector API (`window.midnight` enumeration, `connect('preprod')`)
+- 1AM **connect / disconnect** via the DApp connector API (`window.midnight` enumeration, `connect('preprod')`)
+- The challenge brief names Lace. This project uses 1AM at the user's direction, which a reviewer may treat as a wallet-requirement deviation.
 - `openShow` and `checkIn` called from the frontend
 - Observable privacy: private form vs public ledger panel
 - Contract deployed to Midnight **Preprod**
@@ -76,7 +77,7 @@ zeroshow/
 │   ├── zeroshow.compact      # Compact source
 │   ├── witnesses.ts          # Private-state callbacks for the circuits
 │   └── managed/zeroshow/     # Generated circuits + keys (committed)
-├── web/                      # Vite + React door UI (Lace on Preprod)
+├── web/                      # Vite + React door UI (1AM on Preprod)
 ├── src/                      # Deploy, CLI, tests
 ├── scripts/                  # compile wrapper (WSL on Windows), clean, e2e
 ├── screenshots/              # Compile + deploy evidence
@@ -94,8 +95,8 @@ zeroshow/
 - **Docker Desktop** with Compose v2 (proof server)
 - **Compact compiler 0.31.1** — [Install the Midnight toolchain](https://docs.midnight.network/getting-started/installation)
 - On Windows: **WSL Ubuntu**. Compact has no native Windows binary; `npm run compile` calls WSL for you.
-- [Lace](https://www.lace.io/) browser extension, network set to **Preprod**
-- Preprod tNIGHT from the [Preprod faucet](https://faucet.preprod.midnight.network/), then **Generate tDUST** in Lace (fees)
+- [1AM Wallet](https://1am.xyz/) browser extension, connected to **Preprod**
+- A 1AM Wallet extension connected to Midnight Preprod; if it requests test fees, use the wallet's Preprod NIGHT/DUST flow
 
 ---
 
@@ -121,7 +122,7 @@ Run tests:
 npm test
 ```
 
-Start the local proof server (Lace → Settings → Midnight → Local `http://localhost:6300`):
+The app uses the proving service URI returned by 1AM. Start a local proof server only if you have configured the wallet to use it:
 
 ```bash
 npm run proof-server:start
@@ -134,7 +135,7 @@ npm install --prefix web
 npm run web
 ```
 
-Opens `http://localhost:3000`. Connect Lace, join the Preprod contract (or **Deploy new door**), call `openShow`, then `checkIn`.
+Opens `http://localhost:3000`. Connect 1AM, join the Preprod contract (or **Deploy new door**), call `openShow`, then `checkIn`.
 
 CLI path (optional):
 
@@ -153,11 +154,11 @@ Wallet seeds live in `.midnight-state.json` (gitignored).
 | --- | --- |
 | Public GitHub repo + README | this repository |
 | Live demo | see **Live demo** at the top |
-| Lace connect / disconnect | `web/src/App.tsx`, `web/src/selectWallet.ts` |
+| 1AM connect / disconnect | `web/src/App.tsx`, `web/src/selectWallet.ts` |
 | Circuit called from the frontend | `openShow` / `checkIn` in the door UI |
 | Observable privacy behavior | [Level 2 privacy claim](#level-2-privacy-claim) |
 | Preprod contract address | [Preprod deployment](#preprod-deployment) |
-| Demo video | wallet connect + successful `checkIn` (record in Chrome with Lace) |
+| Demo video | wallet connect + successful `checkIn` (record in a browser with 1AM) |
 | 8+ meaningful commits | git history |
 
 ---
@@ -193,7 +194,7 @@ After the first Preprod deploy, set `VITE_DEFAULT_CONTRACT` so the live demo joi
 | Level | Theme | ZeroShow increment |
 | --- | --- | --- |
 | 1 New Moon | Toolchain | Compact contract, tests, Preview deploy |
-| 2 Waxing Crescent | Frontend | Door UI + Lace wallet on Preprod |
+| 2 Waxing Crescent | Frontend | Door UI + 1AM wallet on Preprod |
 | 3 First Quarter | Production | Tests, CI/CD, issue a real problem statement |
 | 4 Waxing Gibbous | MVP | Issuer attestation + nullifier so tickets cannot be replayed |
 | 5 Full Moon | Users | Feedback loop and Preprod guests |
