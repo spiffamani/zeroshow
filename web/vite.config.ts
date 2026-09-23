@@ -61,6 +61,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      '@midnight-ntwrk/compact-runtime': path.resolve(here, 'node_modules/@midnight-ntwrk/compact-runtime/dist/index.js'),
       'isomorphic-ws': path.resolve(here, 'src/ws-browser.ts'),
     },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.wasm'],
