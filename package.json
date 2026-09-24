@@ -54,5 +54,8 @@
     "zero-knowledge",
     "privacy",
     "compact"
-  ]
+  ],
+  "overrides": {
+    "@midnight-ntwrk/onchain-runtime-v3": "3.0.0"
+  }
 }
