@@ -6,7 +6,7 @@ ZeroShow is a privacy-first live-event check-in protocol on [Midnight](https://m
 
 This repository is the Midnight Moon **Level 2 — Waxing Crescent** submission (September cohort): the Level 1 Compact event-admission contract, wired to a 1AM-connected door UI on **Preprod**. The app keeps ticket and age out of the public ledger; the connected proving service receives private witnesses to construct the proof.
 
-Live demo: _pending first Vercel deploy._
+Live demo: [ZeroShow on Vercel](https://zeroshow-git-main-spiffamanis-projects.vercel.app/)
 
 ---
 
@@ -80,7 +80,7 @@ zeroshow/
 ├── web/                      # Vite + React door UI (1AM on Preprod)
 ├── src/                      # Deploy, CLI, tests
 ├── scripts/                  # compile wrapper (WSL on Windows), clean, e2e
-├── screenshots/              # Compile + deploy evidence
+├── screenshots/              # Compile, deploy, and Preprod transaction evidence
 ├── docker-compose.yml        # Local node / indexer / proof server
 ├── vercel.json               # Live demo build
 ├── package.json
@@ -169,10 +169,12 @@ Wallet seeds live in `.midnight-state.json` (gitignored).
 | --- | --- |
 | Network | Midnight Preprod |
 | Faucet | https://faucet.preprod.midnight.network/ |
-| Contract address | _deploy from the UI (**Deploy new door**) or `npm run setup -- --network preprod`, then paste the 64-hex address here and into `web/.env` as `VITE_DEFAULT_CONTRACT`_ |
+| Contract address | `625253449a970ae7f0ee7b0272627fc2f04fbcd5295ea31881639a01cebb3934` |
+| Successful `checkIn` transaction | [View on Midnight Preprod Explorer](https://preprod.midnightexplorer.com/transactions/0x6871becc7d41353f70281b8eab14bec8f04264f493acd427e0337dad70093176) |
+| Transaction evidence screenshot | `screenshots/preprod-checkin-transaction.png` |
 | Proof server | local Docker `midnightntwrk/proof-server:8.1.0` on port 6300 |
 
-After the first Preprod deploy, set `VITE_DEFAULT_CONTRACT` so the live demo joins that door automatically.
+After the first Preprod deploy, set `VITE_DEFAULT_CONTRACT` in the Vercel Production environment (and in `web/.env` for local development) so the live demo joins that door automatically.
 
 ---
 
